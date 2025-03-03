@@ -8,7 +8,7 @@
   </div>
   <div v-else>
     <video ref="localVideo" autoplay muted style="border: 2px solid red"></video>
-    <video ref="remoteVideo" playsInline style="border: 2px solid green"></video>
+    <video ref="remoteVideo" autoplay="true" style="border: 2px solid green"></video>
   </div>
 </template>
 
