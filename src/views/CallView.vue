@@ -2,6 +2,7 @@
   <h1>Hackercall</h1>
   {{ myPeerId }} asd
   <button @click="copyJoinCallCommand">Compartilhar meu peerId {{ myPeerId }}</button>
+  <button @click="callPeer(route.query.peerId)" v-if="route.query.peerId">Call Peer</button>
   <div v-if="!localStream">
     <p>Clique no botão abaixo para iniciar a chamada.</p>
     <button @click="startCall">Iniciar Chamada</button>
@@ -83,7 +84,7 @@ onMounted(async () => {
 })
 
 const callPeer = (peerId) => {
-  console.log('entrei aqui')
+  console.log('ligando para o peer', peerId)
   const call = peer.call(peerId, localStream.value)
   call.on('stream', (remoteStream) => {
     console.log('liguei pro outro peer e recebi de volta a stream', remoteStream)
