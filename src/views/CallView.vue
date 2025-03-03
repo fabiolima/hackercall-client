@@ -8,8 +8,19 @@
     <button @click="startCall">Iniciar Chamada</button>
   </div>
   <div v-else>
-    <video ref="localVideo" autoplay muted style="border: 2px solid red"></video>
-    <video ref="remoteVideo" autoplay="true" style="border: 2px solid green"></video>
+    <video
+      ref="localVideo"
+      autoplay="true"
+      playsinline="true"
+      muted
+      style="border: 2px solid red"
+    ></video>
+    <video
+      ref="remoteVideo"
+      autoplay="true"
+      playsinline="true"
+      style="border: 2px solid green"
+    ></video>
   </div>
 </template>
 
