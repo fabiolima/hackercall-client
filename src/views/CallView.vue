@@ -18,8 +18,6 @@ import Peer from 'peerjs'
 import { useRoute } from 'vue-router'
 
 const myPeerId = ref('')
-const roomId = ref('')
-const inputRoomId = ref('')
 const localVideo = ref(null)
 const remoteVideo = ref(null)
 
@@ -29,7 +27,7 @@ let peer
 const localStream = ref(null)
 
 const copyJoinCallCommand = () => {
-  navigator.clipboard.writeText(`http://localhost:3339/?peerId=${myPeerId.value}`)
+  navigator.clipboard.writeText(`https://hackercall-client.onrender.com/?peerId=${myPeerId.value}`)
 }
 
 const onPeerCall = (call) => {
