@@ -28,9 +28,10 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePeerConnection } from '@/composables/usePeerConnection'
+import { useMediaDevices } from '@/composables/useMediaDevices'
 
 const { myPeer, startPeerConnection, answerCallsWith, call } = usePeerConnection()
-
+const { getUserMedia } = useMediaDevices()
 const localVideo = ref(null)
 const remoteVideo = ref(null)
 
@@ -47,15 +48,10 @@ const copyJoinCallCommand = () => {
 }
 
 const startMediaStream = async () => {
-  const { hasCamera, hasMicrophone } = await checkMediaDevices()
+  const stream = await getUserMedia()
 
-  console.log('entrei', hasCamera, hasMicrophone)
-
-  if (hasCamera || hasMicrophone) {
-    localStream.value = await navigator.mediaDevices.getUserMedia({
-      video: hasCamera,
-      audio: hasMicrophone,
-    })
+  if (stream) {
+    localStream.value = stream
     await nextTick()
     localVideo.value.srcObject = localStream.value
   }
@@ -77,13 +73,5 @@ const onCallAnswered = (remoteStream) => {
 
 const callPeer = (peerId) => {
   call(peerId, localStream.value, onCallAnswered)
-}
-
-const checkMediaDevices = async () => {
-  const devices = await navigator.mediaDevices.enumerateDevices()
-  const hasCamera = devices.some((device) => device.kind === 'videoinput')
-  const hasMicrophone = devices.some((device) => device.kind === 'audioinput')
-
-  return { hasCamera, hasMicrophone }
 }
 </script>
