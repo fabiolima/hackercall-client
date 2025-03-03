@@ -1,7 +1,7 @@
 <template>
   <h1>Hackercall</h1>
-  {{ myPeerId }} asd
-  <button @click="copyJoinCallCommand">Compartilhar meu peerId {{ myPeerId }}</button>
+  {{ myPeer?.id }}
+  <button @click="copyJoinCallCommand">Compartilhar meu peerId {{ myPeer?.id }}</button>
   <button @click="callPeer(route.query.peerId)" v-if="route.query.peerId">Call Peer</button>
   <div v-if="!localStream">
     <p>Clique no botão abaixo para iniciar a chamada.</p>
@@ -26,52 +26,24 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import Peer from 'peerjs'
 import { useRoute } from 'vue-router'
+import { usePeerConnection } from '@/composables/usePeerConnection'
 
-const myPeerId = ref('')
+const { myPeer, startPeerConnection, answerCallsWith, call } = usePeerConnection()
+
 const localVideo = ref(null)
 const remoteVideo = ref(null)
 
 const route = useRoute()
 
-let peer
 const localStream = ref(null)
 
 const copyJoinCallCommand = () => {
-  navigator.clipboard.writeText(`https://hackercall-client.onrender.com/?peerId=${myPeerId.value}`)
-}
+  const baseUrl = import.meta.env.DEV
+    ? `http://localhost:3339/?peerId=${myPeer.value.id}`
+    : `https://hackercall-client.onrender.com/?peerId=${myPeer.value.id}`
 
-const onPeerCall = (call) => {
-  console.log('alguem chamou', call)
-  call.answer(localStream.value)
-  call.on('stream', (remoteStream) => {
-    console.log('recebi alguma stream')
-    remoteVideo.value.srcObject = remoteStream
-  })
-}
-
-const openMyPeerConnection = () => {
-  return new Promise((resolve) => {
-    peer.on('open', (id) => {
-      resolve(id)
-    })
-  })
-}
-
-const initPeer = async () => {
-  peer = new Peer({
-    host: 'hackercall-peerjs-server.onrender.com', // Substitua pelo endereço do seu servidor
-    secure: true, // Usar HTTPS
-    path: '/',
-  })
-
-  myPeerId.value = await openMyPeerConnection()
-  peer.on('call', onPeerCall)
-
-  if (route.query.peerId) {
-    callPeer(route.query.peerId)
-  }
+  navigator.clipboard.writeText(baseUrl)
 }
 
 const startMediaStream = async () => {
@@ -91,21 +63,20 @@ const startMediaStream = async () => {
 
 onMounted(async () => {
   await startMediaStream()
-  await initPeer()
+  await startPeerConnection()
+  answerCallsWith(localStream, onCallAnswered)
+
+  if (route.query.peerId) {
+    callPeer(route.query.peerId)
+  }
 })
 
-const callPeer = (peerId) => {
-  console.log('ligando para o peer', peerId)
-  const call = peer.call(peerId, localStream.value)
-  call.on('stream', (remoteStream) => {
-    console.log('liguei pro outro peer e recebi de volta a stream', remoteStream)
-    remoteVideo.value.srcObject = remoteStream
-    console.log(remoteVideo.value.srcObject)
-  })
+const onCallAnswered = (remoteStream) => {
+  remoteVideo.value.srcObject = remoteStream
+}
 
-  call.on('error', (err) => {
-    console.error(err)
-  })
+const callPeer = (peerId) => {
+  call(peerId, localStream.value, onCallAnswered)
 }
 
 const checkMediaDevices = async () => {
