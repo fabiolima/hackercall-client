@@ -2,15 +2,14 @@
   <div
     class="w-full overflow-hidden border-2 relative rounded-3xl border-gray-100 grow flex items-center justify-center"
   >
-    <!-- <template v-if="hasAudioTrack && !hasVideoTrack"> -->
-    <template v-if="false">
+    <template v-if="hasAudioTrack && !hasVideoTrack">
       <div ref="myAvatar" class="avatar rounded-full w-fit relative">
         <div ref="sonar" class="sonar"></div>
         <div class="sonar-ring"></div>
         <img src="/avatar/anon.png" class="w-44 rounded-full overflow-hidden h-auto p-6 bg-white" />
       </div>
     </template>
-    <template v-if="true || hasVideoTrack">
+    <template v-if="hasVideoTrack">
       <video
         ref="myVideo"
         autoplay="true"
@@ -45,7 +44,6 @@ onMounted(async () => {
 
   const stream = await getUserMedia()
   setMyStream(stream)
-  myVideo.value.srcObject = myStream.value
 })
 
 const hasAudioTrack = computed(() => {
@@ -79,12 +77,18 @@ watch(averageVolume, (value) => {
 })
 
 watchEffect(async () => {
+  if (hasVideoTrack.value) {
+    myVideo.value.srcObject = myStream.value
+  }
+})
+
+watchEffect(async () => {
   if (hasAudioTrack.value && !hasVideoTrack.value) {
     console.log('entrei aqui')
     // Await for DOM rendering
     await nextTick()
 
-    // setupAudioAnalyser(myStream.value)
+    setupAudioAnalyser(myStream.value)
   }
 })
 </script>
