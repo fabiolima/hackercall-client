@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-100 overflow-hidden border-2 rounded-3xl border-gray-100 grow flex items-center justify-center"
+    class="w-full overflow-hidden border-2 relative rounded-3xl border-gray-100 grow flex items-center justify-center"
   >
     <!-- <template v-if="hasAudioTrack && !hasVideoTrack"> -->
     <template v-if="false">
@@ -11,7 +11,13 @@
       </div>
     </template>
     <template v-if="true || hasVideoTrack">
-      <video ref="myVideo" autoplay="true" playsinline="true" muted class="h-full"></video>
+      <video
+        ref="myVideo"
+        autoplay="true"
+        playsinline="true"
+        muted
+        class="w-full object-cover absolute max-w-none"
+      ></video>
     </template>
   </div>
 </template>
