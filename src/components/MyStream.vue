@@ -37,12 +37,14 @@ const { setupAudioAnalyser, averageVolume } = useAudioAnalyser()
 
 const myAvatar = ref(null)
 const sonar = ref(null)
+const myVideo = ref(null)
 
 onMounted(async () => {
   await startMyPeer()
 
   const stream = await getUserMedia()
   setMyStream(stream)
+  myVideo.value.srcObject = myStream.value
 })
 
 const hasAudioTrack = computed(() => {
