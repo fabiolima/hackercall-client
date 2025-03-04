@@ -16,7 +16,7 @@
         autoplay="true"
         playsinline="true"
         muted
-        class="w-full object-cover absolute max-w-none"
+        class="w-full h-full object-cover absolute max-w-none"
       ></video>
     </template>
   </div>
