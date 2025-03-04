@@ -3,19 +3,7 @@
     <h1 class="text-center mb-4 text-gray-100 text-3xl font-bold underline">Hackercall</h1>
 
     <div class="flex flex-col lg:flex-row h-full gap-4">
-      <div
-        class="border-2 rounded-3xl border-gray-100 grow flex items-center justify-center"
-        v-if="!loading"
-      >
-        <div ref="myAvatar" class="avatar rounded-full w-fit relative">
-          <div class="sonar"></div>
-          <div class="sonar-ring"></div>
-          <img
-            src="/avatar/anon.png"
-            class="w-44 rounded-full overflow-hidden h-auto p-6 bg-white"
-          />
-        </div>
-      </div>
+      <MyStream></MyStream>
       <div class="border-2 rounded-3xl border-gray-100 grow flex items-center justify-center">
         <div class="avatar rounded-full overflow-hidden w-fit">
           <img src="/avatar/anon.png" class="w-44 overflow-hidden h-auto p-6 bg-white" />
@@ -38,13 +26,6 @@
   </div>
   <div v-else>
     <video
-      ref="localVideo"
-      autoplay="true"
-      playsinline="true"
-      muted
-      style="border: 2px solid red"
-    ></video>
-    <video
       ref="remoteVideo"
       autoplay="true"
       playsinline="true"
@@ -58,7 +39,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePeerConnection } from '@/composables/usePeerConnection'
 import { useMediaDevices } from '@/composables/useMediaDevices'
-import Avatar from '@/components/Avatar.vue'
+import MyStream from '@/components/MyStream.vue'
 
 const { myPeer, startPeerConnection, answerCallsWith, call } = usePeerConnection()
 const { getUserMedia, loading, hasCamera, hasMicrophone } = useMediaDevices()
@@ -144,13 +125,13 @@ const startMediaStream = async () => {
 }
 
 onMounted(async () => {
-  await startMediaStream()
-  await startPeerConnection()
-  answerCallsWith(localStream, onCallAnswered)
-
-  if (route.query.peerId) {
-    callPeer(route.query.peerId)
-  }
+  // await startMediaStream()
+  // await startPeerConnection()
+  // answerCallsWith(localStream, onCallAnswered)
+  //
+  // if (route.query.peerId) {
+  //   callPeer(route.query.peerId)
+  // }
 })
 
 const onCallAnswered = (remoteStream) => {
@@ -161,34 +142,3 @@ const callPeer = (peerId) => {
   call(peerId, localStream.value, onCallAnswered)
 }
 </script>
-
-<style>
-.sonar {
-  content: '';
-  width: 100%;
-  height: 100%;
-  display: block;
-  background-color: #ffffff1a;
-  border-radius: 50%;
-  transform: scale(1);
-  position: absolute;
-  z-index: -1;
-  transition: transform 180ms;
-}
-.avatar {
-  z-index: 10;
-  /* box-shadow: 0px 0px 1px 1px #ffffff1a; */
-}
-.pulse {
-  animation: pulse-animation 1s infinite;
-}
-
-@keyframes pulse-animation {
-  0% {
-    box-shadow: 0 0 0 0px #ffffff1a;
-  }
-  100% {
-    box-shadow: 0 0 0 20px #000;
-  }
-}
-</style>

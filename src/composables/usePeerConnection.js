@@ -13,13 +13,13 @@ const usePeerConnection = () => {
   }
 
   const startPeerConnection = async () => {
-    myPeer.value = new Peer({
+    const peer = new Peer({
       host: 'hackercall-peerjs-server.onrender.com',
       secure: true,
       path: '/',
     })
 
-    await openConnectionAsync(myPeer.value)
+    await openConnectionAsync(peer)
   }
 
   const answerCallsWith = (streamRef, onStreamHandler) => {
