@@ -1,5 +1,7 @@
 <template>
-  <div class="border-2 rounded-3xl border-gray-100 grow flex items-center justify-center">
+  <div
+    class="w-100 overflow-hidden border-2 rounded-3xl border-gray-100 grow flex items-center justify-center"
+  >
     <!-- <template v-if="hasAudioTrack && !hasVideoTrack"> -->
     <template v-if="false">
       <div ref="myAvatar" class="avatar rounded-full w-fit relative">
@@ -9,14 +11,7 @@
       </div>
     </template>
     <template v-if="true || hasVideoTrack">
-      <video
-        ref="myVideo"
-        autoplay="true"
-        playsinline="true"
-        muted
-        class="h-full"
-        style="border: 2px solid red"
-      ></video>
+      <video ref="myVideo" autoplay="true" playsinline="true" muted class="h-full"></video>
     </template>
   </div>
 </template>

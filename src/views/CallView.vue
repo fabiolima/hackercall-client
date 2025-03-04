@@ -4,7 +4,9 @@
 
     <div class="flex flex-col lg:flex-row h-full gap-4">
       <MyStream></MyStream>
-      <div class="border-2 rounded-3xl border-gray-100 grow flex items-center justify-center">
+      <div
+        class="w-full border-2 rounded-3xl border-gray-100 grow flex items-center justify-center"
+      >
         <div class="avatar rounded-full overflow-hidden w-fit">
           <img src="/avatar/anon.png" class="w-44 overflow-hidden h-auto p-6 bg-white" />
         </div>
