@@ -9,14 +9,18 @@
         <img src="/avatar/anon.png" class="w-44 rounded-full overflow-hidden h-auto p-6 bg-white" />
       </div>
     </template>
-    <template v-if="hasVideoTrack">
-      <video
-        ref="myVideo"
-        autoplay="true"
-        playsinline="true"
-        muted
-        class="rotate-y-180 w-full h-full object-cover absolute max-w-none"
-      ></video>
+    <template v-if="true">
+      <div
+        id="my-stream-canvas-container"
+        class="h-full w-full flex justify-center items-center"
+      ></div>
+      <!-- <video -->
+      <!--   ref="myVideo" -->
+      <!--   autoplay="true" -->
+      <!--   playsinline="true" -->
+      <!--   muted -->
+      <!--   class="rotate-y-180 w-full h-full object-cover absolute max-w-none" -->
+      <!-- ></video> -->
     </template>
   </div>
 </template>
@@ -27,6 +31,8 @@ import { useMediaDevices } from '@/composables/useMediaDevices'
 import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
 import { useAudioAnalyser } from '@/composables/useAudioAnalyser'
+import { useSketch } from '@/composables/useSketch'
+import p5 from 'p5'
 
 const peerStore = usePeerStore()
 
@@ -39,11 +45,16 @@ const myAvatar = ref(null)
 const sonar = ref(null)
 const myVideo = ref(null)
 
+const { newSketch, capture, capturing } = useSketch()
+
 onMounted(async () => {
   await startMyPeer()
 
-  const stream = await getUserMedia()
-  setMyStream(stream)
+  newSketch('my-stream-canvas-container')
+  // const myp5 = new p5(useSketch, 'my-stream-canvas-container')
+  // debugger
+  // const stream = await getUserMedia()
+  // setMyStream(stream)
 })
 
 const hasAudioTrack = computed(() => {
@@ -78,6 +89,7 @@ watch(averageVolume, (value) => {
 
 watchEffect(async () => {
   if (hasVideoTrack.value) {
+    await nextTick()
     myVideo.value.srcObject = myStream.value
   }
 })

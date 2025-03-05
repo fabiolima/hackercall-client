@@ -4,13 +4,13 @@
 
     <div class="flex flex-col lg:flex-row h-full gap-4">
       <MyStream></MyStream>
-      <div
-        class="w-full border-2 rounded-3xl border-gray-100 grow flex items-center justify-center"
-      >
-        <div class="avatar rounded-full overflow-hidden w-fit">
-          <img src="/avatar/anon.png" class="w-44 overflow-hidden h-auto p-6 bg-white" />
-        </div>
-      </div>
+      <!-- <div -->
+      <!--   class="w-full border-2 rounded-3xl border-gray-100 grow flex items-center justify-center" -->
+      <!-- > -->
+      <!--   <div class="avatar rounded-full overflow-hidden w-fit"> -->
+      <!--     <img src="/avatar/anon.png" class="w-44 overflow-hidden h-auto p-6 bg-white" /> -->
+      <!--   </div> -->
+      <!-- </div> -->
     </div>
   </main>
   <!---->
@@ -20,20 +20,20 @@
   <!--   </div> -->
   <!-- </section> -->
 
-  <button @click="copyJoinCallCommand">Compartilhar meu peerId {{ myPeer?.id }}</button>
-  <button @click="callPeer(route.query.peerId)" v-if="route.query.peerId">Call Peer</button>
-  <div v-if="!localStream">
-    <p>Clique no botão abaixo para iniciar a chamada.</p>
-    <button @click="startCall">Iniciar Chamada</button>
-  </div>
-  <div v-else>
-    <video
-      ref="remoteVideo"
-      autoplay="true"
-      playsinline="true"
-      style="border: 2px solid green"
-    ></video>
-  </div>
+  <!-- <button @click="copyJoinCallCommand">Compartilhar meu peerId {{ myPeer?.id }}</button> -->
+  <!-- <button @click="callPeer(route.query.peerId)" v-if="route.query.peerId">Call Peer</button> -->
+  <!-- <div v-if="!localStream"> -->
+  <!--   <p>Clique no botão abaixo para iniciar a chamada.</p> -->
+  <!--   <button @click="startCall">Iniciar Chamada</button> -->
+  <!-- </div> -->
+  <!-- <div v-else> -->
+  <!--   <video -->
+  <!--     ref="remoteVideo" -->
+  <!--     autoplay="true" -->
+  <!--     playsinline="true" -->
+  <!--     style="border: 2px solid green" -->
+  <!--   ></video> -->
+  <!-- </div> -->
 </template>
 
 <script setup>
