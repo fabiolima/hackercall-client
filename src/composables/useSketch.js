@@ -56,13 +56,28 @@ const useSketch = () => {
           const { width, height } = capture.value.size()
           const newWidth = (width * parentHeight) / height
 
-          // capture.value.size(newWidth, parentHeight)
-          sketch.resizeCanvas(width, height)
-          capture.value.size(width, height)
+          if (height > parentHeight) {
+            capture.value.elt.style.width = 'auto'
+            capture.value.elt.style.height = '100%'
 
-          // capture.value.hide()
+            setTimeout(() => {
+              const { width, height } = capture.value.size()
+              sketch.resizeCanvas(width, height)
+              capture.value.size(width, height)
 
-          capturing.value = true
+              // capture.value.hide()
+
+              capturing.value = true
+            }, 0)
+          } else {
+            // capture.value.size(newWidth, parentHeight)
+            sketch.resizeCanvas(width, height)
+            capture.value.size(width, height)
+
+            // capture.value.hide()
+
+            capturing.value = true
+          }
         }, 0)
       })
       // debugger

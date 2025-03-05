@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full overflow-hidden border-2 relative rounded-3xl border-gray-100 grow flex items-center justify-center"
+    class="w-full overflow-hidden border-2 relative border-gray-100 grow flex items-center justify-center"
   >
     <template v-if="hasAudioTrack && !hasVideoTrack">
       <div ref="myAvatar" class="avatar rounded-full w-fit relative">
@@ -12,7 +12,7 @@
     <template v-if="true">
       <div
         id="my-stream-canvas-container"
-        class="h-full w-full flex justify-center items-center"
+        class="h-full w-full flex items-center justify-center"
       ></div>
       <!-- <video -->
       <!--   ref="myVideo" -->
