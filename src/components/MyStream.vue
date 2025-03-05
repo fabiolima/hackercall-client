@@ -9,7 +9,7 @@
         <img src="/avatar/anon.png" class="w-44 rounded-full overflow-hidden h-auto p-6 bg-white" />
       </div>
     </template>
-    <template v-if="capturing">
+    <template v-if="async () => await hasCamera()">
       <div
         id="my-stream-canvas-container"
         class="h-full w-full flex items-center justify-center"
