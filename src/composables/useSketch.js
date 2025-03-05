@@ -66,7 +66,7 @@ const useSketch = () => {
       capture.value.elt.remove()
     }
 
-    capture.value = sketch.createCapture(constraints, async () => {
+    capture.value = sketch.createCapture(constraints, { flipped: true }, async () => {
       capture.value.elt.style.position = 'absolute'
       capture.value.elt.style.visibility = 'hidden'
 
@@ -104,9 +104,9 @@ const useSketch = () => {
 
     sketch.draw = () => {
       sketch.background(params.background)
-
       sketch.textSize(params.textSize)
       sketch.fill(params.colour)
+
       const characters = params.characters.split('')
 
       if (capturing.value) {
