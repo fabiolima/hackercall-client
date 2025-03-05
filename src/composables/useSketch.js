@@ -21,6 +21,10 @@ const useSketch = () => {
     audio: false,
   }
 
+  let lastWindowResize = 0
+  let currentTime = 0
+  const onResizeDebounce = 1000
+
   const instance = ref(null)
   const container = ref(null)
 
@@ -39,6 +43,7 @@ const useSketch = () => {
         capture.value.stop()
         capture.value.elt.remove()
       }
+
       capture.value = sketch.createCapture(constraints, function () {
         capture.value.elt.style.width = '100%'
         capture.value.elt.style.height = 'auto'
@@ -67,87 +72,24 @@ const useSketch = () => {
       const parentHeight = container.value.clientHeight
       const parentWidth = container.value.clientWidth
 
-      // debugger
       const canvas = sketch.createCanvas(parentWidth, parentHeight)
       onWindowResize()
-
-      // capture.value = sketch.createCapture(constraints, function () {
-      //   capturing.value = true
-      //   console.log('capturing')
-
-      // console.log(capture.value.size())
-      //
-      // const { width, height } = capture.value.size()
-      // const newWidth = (width * parentHeight) / height
-      //
-      // capture.value.size(newWidth, parentHeight)
-      // sketch.resizeCanvas(newWidth, parentHeight)
-
-      //
-      // sketch.resizeCanvas(width, height)
-      //
-      // capture.value.size(newWidth, sketch._userNode.clientHeight)
-      // capture.value.hide()
-
-      // capture.value.elt.style.height = '100%'
-      // capture.value.elt.style.width = 'auto'
-      // size('auto', '100%')
-      // capture.value.elt.style.height = '100%'
-      // capture.value.elt.style.width = 'auto'
-      //
-      // const { width, height } = capture.value.size()
-      // sketch.resizeCanvas(width, height)
-      //
-      // debugger
-      // capture.value.hide()
-
-      // sketch.resizeCanvas()
-      // })
-
-      // capture.value.addEventListener('loadedmetadata', () => {
-      //   console.log(capture.value.size())
-      //
-      //   capture.value.size('auto', sketch._userNode.clientHeight)
-      //   capture.value.hide()
-      // })
     }
 
     sketch.windowResized = () => {
+      currentTime = sketch.millis()
+
+      if (currentTime - lastWindowResize < onResizeDebounce) return
+
+      // @TODO fazer o calculo da inversão de proporcao
+      // quando o video for maior que o container, inverter para height 100% e width auto
+
       capturing.value = false
       onWindowResize()
-      // const parentHeight = container.value.clientHeight
-      // const parentWidth = container.value.clientWidth
-      //
-      // const { width, height } = capture.value.size()
-      // const newWidth = (width * parentHeight) / height
-      //
-      // capture.value.size(newWidth, parentHeight)
-      // sketch.resizeCanvas(newWidth, parentHeight)
+      lastWindowResize = currentTime
     }
-    // sketch.windowResized = () => {
-    // const { width, height } = capture.value.size()
-    // const newWidth = (width * container.value.clientHeight) / height
-    //
-    // sketch.resizeCanvas(newWidth, container.value.clientHeight)
-    // capture.value = sketch.createCapture(constraints, function () {
-    //   capturing.value = true
-    //   console.log('capturing')
-    //
-    //   console.log(capture.value.size())
-    //
-    //   const { width, height } = capture.value.size()
-    //   const newWidth = (width * container.value.clientHeight) / height
-    //
-    //   sketch.resizeCanvas(newWidth, container.value.clientHeight)
-    //
-    //   capture.value.size(newWidth, container.value.clientHeight)
-    //   capture.value.hide()
-    // })
-    // }
 
     sketch.draw = () => {
-      // return
-      // console.log(capture.value.size())
       sketch.background(params.background)
 
       sketch.textSize(params.textSize)
@@ -157,7 +99,7 @@ const useSketch = () => {
       if (capturing.value) {
         capture.value.loadPixels()
         // console.log(capture.value.size())
-        console.log(capture.value.width, capture.value.height)
+        // console.log(capture.value.width, capture.value.height)
 
         if (capture.value.pixels) {
           for (y = 0; y < capture.value.height; y += params.pixelSize) {
