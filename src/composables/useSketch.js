@@ -82,6 +82,7 @@ const useSketch = () => {
       capture.value.hide()
 
       capturing.value = true
+      console.log(capture.value.elt.srcObject)
     })
   }
 

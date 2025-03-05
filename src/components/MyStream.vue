@@ -14,13 +14,6 @@
         id="my-stream-canvas-container"
         class="h-full w-full flex items-center justify-center"
       ></div>
-      <!-- <video -->
-      <!--   ref="myVideo" -->
-      <!--   autoplay="true" -->
-      <!--   playsinline="true" -->
-      <!--   muted -->
-      <!--   class="rotate-y-180 w-full h-full object-cover absolute max-w-none" -->
-      <!-- ></video> -->
     </template>
   </div>
 </template>
@@ -88,19 +81,15 @@ watch(averageVolume, (value) => {
 })
 
 watchEffect(async () => {
-  if (hasVideoTrack.value) {
+  if (hasAudioTrack.value && !hasVideoTrack.value) {
     await nextTick()
-    myVideo.value.srcObject = myStream.value
+    setupAudioAnalyser(myStream.value)
   }
 })
 
 watchEffect(async () => {
-  if (hasAudioTrack.value && !hasVideoTrack.value) {
-    console.log('entrei aqui')
-    // Await for DOM rendering
-    await nextTick()
-
-    setupAudioAnalyser(myStream.value)
+  if (capturing.value === true) {
+    setMyStream(capture.value.elt.srcObject)
   }
 })
 </script>
