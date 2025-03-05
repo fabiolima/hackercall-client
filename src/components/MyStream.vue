@@ -35,7 +35,6 @@ const { setupAudioAnalyser, averageVolume } = useAudioAnalyser()
 
 const myAvatar = ref(null)
 const sonar = ref(null)
-const myVideo = ref(null)
 
 const { newSketch, capture, capturing } = useSketch()
 
@@ -89,7 +88,7 @@ watchEffect(async () => {
 
 watchEffect(async () => {
   if (capturing.value === true) {
-    setMyStream(capture.value.elt.srcObject)
+    setMyStream(capture.value.elt.srcObject) // capture.value.elt points to a video tag.
   }
 })
 </script>
