@@ -1,118 +1,58 @@
 <template>
-  <h1>Hackercall</h1>
-  {{ myPeerId }} asd
-  <button @click="copyJoinCallCommand">Compartilhar meu peerId {{ myPeerId }}</button>
-  <button @click="callPeer(route.query.peerId)" v-if="route.query.peerId">Call Peer</button>
-  <div v-if="!localStream">
-    <p>Clique no botão abaixo para iniciar a chamada.</p>
-    <button @click="startCall">Iniciar Chamada</button>
-  </div>
-  <div v-else>
-    <video
-      ref="localVideo"
-      autoplay="true"
-      playsinline="true"
-      muted
-      style="border: 2px solid red"
-    ></video>
-    <video
-      ref="remoteVideo"
-      autoplay="true"
-      playsinline="true"
-      style="border: 2px solid green"
-    ></video>
-  </div>
+  <main class="bg-gray-900 h-full max-h-full w-full p-8 flex flex-col">
+    <div class="flex justify-between">
+      <h1 class="text-center mb-4 text-gray-100 text-3xl font-bold underline">Hackercall</h1>
+      <button class="text-white" v-if="myPeer" @click="copyJoinCallCommand">Call me</button>
+      <button class="text-white" v-if="myPeer" @click="copyMyPeerId">{{ myPeer.id }}</button>
+    </div>
+
+    <div class="flex flex-col lg:flex-row h-full gap-4">
+      <MyStream></MyStream>
+
+      <div class="guests-container">
+        <PeerStream v-for="peer in peers" :call="peer" />
+      </div>
+    </div>
+  </main>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import Peer from 'peerjs'
+import { onMounted, watchEffect } from 'vue'
+import MyStream from '@/components/MyStream.vue'
+import { usePeerStore } from '@/stores/peer'
+import { storeToRefs } from 'pinia'
+import PeerStream from '@/components/PeerStream.vue'
 import { useRoute } from 'vue-router'
 
-const myPeerId = ref('')
-const localVideo = ref(null)
-const remoteVideo = ref(null)
+const peerStore = usePeerStore()
+
+const { callPeer } = peerStore
+const { peers, myPeer, myStream } = storeToRefs(peerStore)
 
 const route = useRoute()
 
-let peer
-const localStream = ref(null)
-
 const copyJoinCallCommand = () => {
-  navigator.clipboard.writeText(`https://hackercall-client.onrender.com/?peerId=${myPeerId.value}`)
+  const baseUrl = import.meta.env.DEV
+    ? `http://localhost:3339/?peerId=${myPeer.value.id}`
+    : `https://hackercall-client.onrender.com/?peerId=${myPeer.value.id}`
+
+  navigator.clipboard.writeText(baseUrl)
 }
-
-const onPeerCall = (call) => {
-  console.log('alguem chamou', call)
-  call.answer(localStream.value)
-  call.on('stream', (remoteStream) => {
-    console.log('recebi alguma stream')
-    remoteVideo.value.srcObject = remoteStream
-  })
-}
-
-const openMyPeerConnection = () => {
-  return new Promise((resolve) => {
-    peer.on('open', (id) => {
-      resolve(id)
-    })
-  })
-}
-
-const initPeer = async () => {
-  peer = new Peer({
-    host: 'hackercall-peerjs-server.onrender.com', // Substitua pelo endereço do seu servidor
-    secure: true, // Usar HTTPS
-    path: '/',
-  })
-
-  myPeerId.value = await openMyPeerConnection()
-  peer.on('call', onPeerCall)
-
-  if (route.query.peerId) {
-    callPeer(route.query.peerId)
-  }
-}
-
-const startMediaStream = async () => {
-  const { hasCamera, hasMicrophone } = await checkMediaDevices()
-
-  console.log('entrei', hasCamera, hasMicrophone)
-
-  if (hasCamera || hasMicrophone) {
-    localStream.value = await navigator.mediaDevices.getUserMedia({
-      video: hasCamera,
-      audio: hasMicrophone,
-    })
-    await nextTick()
-    localVideo.value.srcObject = localStream.value
-  }
+const copyMyPeerId = () => {
+  navigator.clipboard.writeText(myPeer.value.id)
 }
 
 onMounted(async () => {
-  await startMediaStream()
-  await initPeer()
+  // if (route.query.peerId) {
+  //   callPeer(route.query.peerId)
+  // }
 })
 
-const callPeer = (peerId) => {
-  console.log('ligando para o peer', peerId)
-  const call = peer.call(peerId, localStream.value)
-  call.on('stream', (remoteStream) => {
-    console.log('liguei pro outro peer e recebi de volta a stream', remoteStream)
-    remoteVideo.value.srcObject = remoteStream
-    console.log(remoteVideo.value.srcObject)
-  })
-
-  call.on('error', (err) => {
-    console.error(err)
-  })
-}
-
-const checkMediaDevices = async () => {
-  const devices = await navigator.mediaDevices.enumerateDevices()
-  const hasCamera = devices.some((device) => device.kind === 'videoinput')
-  const hasMicrophone = devices.some((device) => device.kind === 'audioinput')
-
-  return { hasCamera, hasMicrophone }
-}
+watchEffect(() => {
+  console.log(myPeer.value, myStream.value, route.query.peerId)
+  if (myPeer.value && myStream.value && route.query.peerId) {
+    console.log('vou chamar')
+    callPeer(route.query.peerId)
+  }
+})
 </script>
