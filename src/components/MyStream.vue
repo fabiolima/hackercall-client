@@ -9,7 +9,7 @@
         <img src="/avatar/anon.png" class="w-44 rounded-full overflow-hidden h-auto p-6 bg-white" />
       </div>
     </template>
-    <template v-if="true">
+    <template v-if="capturing">
       <div
         id="my-stream-canvas-container"
         class="h-full w-full flex items-center justify-center"
@@ -32,11 +32,10 @@ import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
 import { useAudioAnalyser } from '@/composables/useAudioAnalyser'
 import { useSketch } from '@/composables/useSketch'
-import p5 from 'p5'
 
 const peerStore = usePeerStore()
 
-const { getUserMedia } = useMediaDevices()
+const { getUserMedia, hasCamera } = useMediaDevices()
 const { setMyStream, startMyPeer } = peerStore
 const { myStream } = storeToRefs(peerStore)
 const { setupAudioAnalyser, averageVolume } = useAudioAnalyser()
@@ -50,11 +49,12 @@ const { newSketch, capture, capturing } = useSketch()
 onMounted(async () => {
   await startMyPeer()
 
-  newSketch('my-stream-canvas-container')
-  // const myp5 = new p5(useSketch, 'my-stream-canvas-container')
-  // debugger
-  // const stream = await getUserMedia()
-  // setMyStream(stream)
+  if (await hasCamera()) {
+    newSketch('my-stream-canvas-container')
+  } else {
+    const stream = await getUserMedia()
+    setMyStream(stream)
+  }
 })
 
 const hasAudioTrack = computed(() => {
