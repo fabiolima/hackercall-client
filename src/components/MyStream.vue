@@ -40,6 +40,7 @@ const { newSketch, capture, capturing } = useSketch()
 
 onMounted(async () => {
   await startMyPeer()
+  console.log('alooo')
 
   if (await hasCamera()) {
     newSketch('my-stream-canvas-container')
