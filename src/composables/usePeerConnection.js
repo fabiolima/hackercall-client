@@ -12,7 +12,7 @@ const usePeerConnection = () => {
     })
   }
 
-  const startPeerConnection = async (onCallHandler) => {
+  const startPeerConnection = async (onConnectionHandler) => {
     const peer = new Peer({
       host: 'hackercall-peerjs-server.onrender.com',
       secure: true,
@@ -20,7 +20,7 @@ const usePeerConnection = () => {
     })
 
     await openConnectionAsync(peer)
-    peer.on('call', onCallHandler)
+    peer.on('connection', onConnectionHandler)
 
     return peer
   }
@@ -33,6 +33,19 @@ const usePeerConnection = () => {
     myPeer.value.on('call', (call) => {
       call.answer(streamRef.value)
       call.on('stream', onStreamHandler)
+    })
+  }
+
+  const connect = (peer, peerId) => {
+    return new Promise((resolve) => {
+      const connection = peer.connect(peerId)
+      connection.on('open', () => {
+        resolve(connection)
+      })
+
+      connection.on('error', (err) => {
+        console.log(err, 'tive um erro aqui ')
+      })
     })
   }
 
@@ -52,6 +65,7 @@ const usePeerConnection = () => {
     answerCallsWith,
     startPeerConnection,
     setOnCallHandler,
+    connect,
   }
 }
 

@@ -26,7 +26,7 @@ import { useRoute } from 'vue-router'
 
 const peerStore = usePeerStore()
 
-const { callPeer } = peerStore
+const { connectToPeer, callPeer } = peerStore
 const { peers, myPeer, myStream } = storeToRefs(peerStore)
 
 const route = useRoute()
@@ -48,11 +48,9 @@ onMounted(async () => {
   // }
 })
 
-watchEffect(() => {
-  console.log(myPeer.value, myStream.value, route.query.peerId)
+watchEffect(async () => {
   if (myPeer.value && myStream.value && route.query.peerId) {
-    console.log('vou chamar')
-    callPeer(route.query.peerId)
+    await connectToPeer(route.query.peerId)
   }
 })
 </script>

@@ -29,18 +29,17 @@ import { useSketch } from '@/composables/useSketch'
 const peerStore = usePeerStore()
 
 const { getUserMedia, hasCamera } = useMediaDevices()
-const { setMyStream, startMyPeer } = peerStore
+const { setMyStream, startMyPeer, spawn } = peerStore
 const { myStream } = storeToRefs(peerStore)
 const { setupAudioAnalyser, averageVolume } = useAudioAnalyser()
 
 const myAvatar = ref(null)
 const sonar = ref(null)
 
-const { newSketch, capture, capturing } = useSketch()
+const { canvasStream, newSketch, capture, capturing } = useSketch()
 
 onMounted(async () => {
   await startMyPeer()
-  console.log('alooo')
 
   if (await hasCamera()) {
     newSketch('my-stream-canvas-container')
@@ -80,6 +79,18 @@ watch(averageVolume, (value) => {
   }
 })
 
+const initSubscriber = () => {
+  canvasStream.value.subscribe({
+    next(value) {
+      spawn(value)
+    },
+
+    error(err) {
+      console.log(err)
+    },
+  })
+}
+
 watchEffect(async () => {
   if (hasAudioTrack.value && !hasVideoTrack.value) {
     await nextTick()
@@ -88,8 +99,15 @@ watchEffect(async () => {
 })
 
 watchEffect(async () => {
-  if (capturing.value === true) {
+  if (capturing.value === true && capture.value?.elt) {
     setMyStream(capture.value.elt.srcObject) // capture.value.elt points to a video tag.
+  }
+})
+
+watch(canvasStream, (value) => {
+  console.log(value)
+  if (value) {
+    initSubscriber()
   }
 })
 </script>

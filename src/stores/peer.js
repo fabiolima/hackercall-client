@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { usePeerConnection } from '@/composables/usePeerConnection'
-const { call, startPeerConnection: start, answerCallsWith, setOnCallHandler } = usePeerConnection()
+const { connect, call, startPeerConnection } = usePeerConnection()
 
 export const usePeerStore = defineStore('peer', () => {
   const peers = ref([])
@@ -9,9 +9,8 @@ export const usePeerStore = defineStore('peer', () => {
   const myStream = ref(null)
 
   async function startMyPeer() {
-    myPeer.value = await start((call) => {
-      call.answer(myStream.value)
-      peers.value.push(call)
+    myPeer.value = await startPeerConnection((connection) => {
+      peers.value.push(connection)
     })
   }
 
@@ -19,11 +18,22 @@ export const usePeerStore = defineStore('peer', () => {
     myStream.value = stream
   }
 
+  async function connectToPeer(peerId) {
+    console.log('chamei aqui')
+    const connection = await connect(myPeer.value, peerId)
+    peers.value.push(connection)
+  }
+
   async function callPeer(peerId) {
-    console.log('vou ligar pro peer', peerId)
     const kall = call(myPeer.value, peerId, myStream.value)
     peers.value.push(kall)
   }
 
-  return { myPeer, myStream, startMyPeer, setMyStream, peers, callPeer }
+  async function spawn(value) {
+    peers.value.forEach((peer) => {
+      peer.send(value)
+    })
+  }
+
+  return { connectToPeer, myPeer, myStream, startMyPeer, setMyStream, peers, callPeer, spawn }
 })
