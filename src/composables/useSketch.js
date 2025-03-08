@@ -33,28 +33,17 @@ const useSketch = () => {
   }
 
   const createFrameObservable = (canvas, fps) => {
-    console.log('to aqui')
     return new Observable((subscriber) => {
-      console.log('alo1')
-      const interval = 1000 / fps // Intervalo entre os frames em milissegundos
-
-      function captureFrame() {
-        canvas.elt.toBlob(
-          (blob) => {
-            subscriber.next(blob) // Emite o frame como Blob
-          },
-          'image/jpeg',
-          1,
-        ) // Qualidade de 80%
+      function streamFacePositions() {
+        const pos = ctracker.value?.getCurrentPosition()
+        if (pos) subscriber.next(pos)
+        requestAnimationFrame(streamFacePositions)
       }
 
-      const frameInterval = setInterval(captureFrame, interval)
+      streamFacePositions()
 
       // Função de limpeza (chamada quando o Observable é cancelado)
-      return () => {
-        console.log('entrei')
-        clearInterval(frameInterval)
-      }
+      return () => {}
     })
   }
 

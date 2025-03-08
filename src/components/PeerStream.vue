@@ -1,34 +1,33 @@
 <template>
-  <h1 class="text-white">aloo</h1>
-  <video ref="video" autoplay playsinline=""></video>
-  <img ref="image" />
-  <canvas ref="canvas" id="videoCanvas" width="800" height="600"></canvas>
+  <div id="peer-canvas-container" class="h-full w-full flex items-center justify-center"></div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { Observable } from 'rxjs'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { usePeerSketch } from '@/composables/usePeerSketch'
 
+const { newPeerSketch } = usePeerSketch()
 const props = defineProps(['call'])
-const stream = ref(null)
-const video = ref(null)
-const image = ref(null)
+const facePositionObservable = ref(null)
 
-const canvas = ref(null)
+// let subscription = null
 
 onMounted(() => {
-  props.call.on('data', (data) => {
-    if (data instanceof Uint8Array) {
-      const blob = new Blob([data], { type: 'image/jpeg' }) // Converte de volta para Blob
-      let ctx = canvas.value.getContext('2d')
-
-      // Cria uma nova imagem a partir do Blob
-      const img = new Image()
-      img.onload = function () {
-        ctx.drawImage(img, 0, 0, canvas.value.width, canvas.value.height) // Desenha a imagem no canvas
-        URL.revokeObjectURL(img.src) // Revoga a URL
-      }
-      img.src = URL.createObjectURL(blob) // Atribui a URL ao src da imagem
-    }
+  facePositionObservable.value = new Observable((subscriber) => {
+    props.call.on('data', (data) => {
+      subscriber.next(data)
+    })
   })
+
+  newPeerSketch('peer-canvas-container', facePositionObservable.value)
+
+  // subscription = facePositionObservable.value.subscribe((d) => {
+  //   console.log(d)
+  // })
+})
+
+onUnmounted(() => {
+  // subscription.unsubscribe()
 })
 </script>

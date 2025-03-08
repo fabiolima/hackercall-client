@@ -9,7 +9,7 @@
     <div class="flex flex-col lg:flex-row h-full gap-4">
       <MyStream></MyStream>
 
-      <div class="guests-container">
+      <div class="guests-container grow w-full h-full">
         <PeerStream v-for="peer in peers" :call="peer" />
       </div>
     </div>
