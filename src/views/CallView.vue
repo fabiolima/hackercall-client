@@ -1,17 +1,13 @@
 <template>
   <main class="bg-gray-900 h-full max-h-full w-full p-8 flex flex-col">
-    <div class="flex justify-between">
-      <h1 class="text-center mb-4 text-gray-100 text-3xl font-bold underline">Hackercall</h1>
-      <button class="text-white" v-if="myPeer" @click="copyJoinCallCommand">Call me</button>
-      <button class="text-white" v-if="myPeer" @click="copyMyPeerId">{{ myPeer.id }}</button>
-    </div>
+    <CallSettings />
 
-    <div class="flex flex-col lg:flex-row h-full gap-4">
+    <div class="flex flex-col lg:flex-row h-full gap-4 mt-16">
       <MyStream></MyStream>
 
-      <div class="guests-container grow w-full h-full">
-        <PeerStream v-for="peer in peers" :call="peer" />
-      </div>
+      <!-- <div class="guests-container grow w-full h-full"> -->
+      <!--   <PeerStream v-for="peer in peers" :call="peer" /> -->
+      <!-- </div> -->
     </div>
   </main>
 </template>
@@ -19,11 +15,16 @@
 <script setup>
 import { onMounted, watchEffect } from 'vue'
 import MyStream from '@/components/MyStream.vue'
+import CallSettings from '@/components/CallSettings.vue'
 import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
 import PeerStream from '@/components/PeerStream.vue'
 import { useRoute } from 'vue-router'
 
+import { useCallSettingsStore } from '@/stores/settings'
+
+const callSettingsStore = useCallSettingsStore()
+const { showSettingsWindow } = callSettingsStore
 const peerStore = usePeerStore()
 
 const { connectToPeer, callPeer } = peerStore
@@ -43,6 +44,7 @@ const copyMyPeerId = () => {
 }
 
 onMounted(async () => {
+  showSettingsWindow()
   // if (route.query.peerId) {
   //   callPeer(route.query.peerId)
   // }

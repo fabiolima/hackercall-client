@@ -8,10 +8,30 @@ export const usePeerStore = defineStore('peer', () => {
   const myPeer = ref(null)
   const myStream = ref(null)
 
+  const state = ref({
+    loading: false,
+    completed: false,
+    error: false,
+  })
+
   async function startMyPeer() {
-    myPeer.value = await startPeerConnection((connection) => {
-      peers.value.push(connection)
-    })
+    state.value.loading = true
+    state.value.completed = false
+
+    try {
+      myPeer.value = await startPeerConnection((connection) => {
+        peers.value.push(connection)
+      })
+
+      state.value.error = false
+    } catch (err) {
+      state.value.error = true
+      console.error(err)
+    } finally {
+      state.value.completed = true
+      state.value.loading = false
+    }
+    console.log('terminei')
   }
 
   function setMyStream(stream) {
@@ -35,5 +55,15 @@ export const usePeerStore = defineStore('peer', () => {
     })
   }
 
-  return { connectToPeer, myPeer, myStream, startMyPeer, setMyStream, peers, callPeer, spawn }
+  return {
+    state,
+    connectToPeer,
+    myPeer,
+    myStream,
+    startMyPeer,
+    setMyStream,
+    peers,
+    callPeer,
+    spawn,
+  }
 })
