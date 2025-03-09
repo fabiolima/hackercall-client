@@ -102,7 +102,11 @@ const show = () => {
   const [wrapperHeight, wrapperWidth] = [innerHeight - 40 * 2, innerWidth - 40 * 2]
 
   tl.to(wrapper.value, {
+    position: 'fixed',
+    zIndex: 10,
     duration: 0,
+    top: 40,
+    left: 40,
     width: wrapperWidth,
     height: wrapperHeight,
   })
@@ -166,10 +170,10 @@ const show = () => {
 
 <style>
 .call-settings-window-wrapper {
-  position: fixed;
-  top: v-bind(windowPadding);
-  left: v-bind(windowPadding);
-  z-index: 10;
+  /* position: fixed; */
+  /* top: v-bind(windowPadding); */
+  /* left: v-bind(windowPadding); */
+  /* z-index: 10; */
 }
 
 .call-settings-window {
