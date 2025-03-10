@@ -1,30 +1,30 @@
 <template>
-  <div id="peer-canvas-container" class="h-full w-full flex items-center justify-center"></div>
+  <div ref="canvasContainer" id="peer-canvas-container" class="h-full w-full overflow-hidden"></div>
 </template>
 
 <script setup>
-import { Observable } from 'rxjs'
 import { onMounted, onUnmounted, ref } from 'vue'
-import { usePeerSketch } from '@/composables/usePeerSketch'
+import { useMediaStore } from '@/stores/media'
+import { storeToRefs } from 'pinia'
+import { useCube } from '@/composables/useCube'
 
-const { newPeerSketch } = usePeerSketch()
+const { start: startMyCube } = useCube()
+
+const canvasContainer = ref(null)
+
 const props = defineProps(['call'])
-const facePositionObservable = ref(null)
 
-// let subscription = null
+const { stream } = storeToRefs(useMediaStore())
 
 onMounted(() => {
-  facePositionObservable.value = new Observable((subscriber) => {
-    props.call.on('data', (data) => {
-      subscriber.next(data)
-    })
+  props.call.answer(stream.value)
+  props.call.on('stream', (incomingStream) => {
+    const aCtx = new AudioContext()
+    const microphone = aCtx.createMediaStreamSource(incomingStream)
+    const destination = aCtx.destination
+    microphone.connect(destination)
+    startMyCube(canvasContainer.value, stream.value)
   })
-
-  newPeerSketch('peer-canvas-container', facePositionObservable.value)
-
-  // subscription = facePositionObservable.value.subscribe((d) => {
-  //   console.log(d)
-  // })
 })
 
 onUnmounted(() => {

@@ -1,12 +1,14 @@
 import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { usePeerConnection } from '@/composables/usePeerConnection'
+import { useMediaStore } from './media'
 const { connect, call, startPeerConnection } = usePeerConnection()
 
 export const usePeerStore = defineStore('peer', () => {
   const peers = ref([])
   const myPeer = ref(null)
-  const myStream = ref(null)
+
+  const { stream } = storeToRefs(useMediaStore())
 
   const state = ref({
     loading: false,
@@ -19,8 +21,8 @@ export const usePeerStore = defineStore('peer', () => {
     state.value.completed = false
 
     try {
-      myPeer.value = await startPeerConnection((connection) => {
-        peers.value.push(connection)
+      myPeer.value = await startPeerConnection((incomingCall) => {
+        peers.value.push(incomingCall)
       })
 
       state.value.error = false
@@ -34,10 +36,6 @@ export const usePeerStore = defineStore('peer', () => {
     console.log('terminei')
   }
 
-  function setMyStream(stream) {
-    myStream.value = stream
-  }
-
   async function connectToPeer(peerId) {
     console.log('chamei aqui')
     const connection = await connect(myPeer.value, peerId)
@@ -45,7 +43,7 @@ export const usePeerStore = defineStore('peer', () => {
   }
 
   async function callPeer(peerId) {
-    const kall = call(myPeer.value, peerId, myStream.value)
+    const kall = call(myPeer.value, peerId, stream.value)
     peers.value.push(kall)
   }
 
@@ -59,9 +57,7 @@ export const usePeerStore = defineStore('peer', () => {
     state,
     connectToPeer,
     myPeer,
-    myStream,
     startMyPeer,
-    setMyStream,
     peers,
     callPeer,
     spawn,

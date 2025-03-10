@@ -1,27 +1,51 @@
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAudioAnalyser } from './useAudioAnalyser'
 import p5 from 'p5'
+
 window.p5 = p5
+
 const useCube = () => {
   const container = ref(null)
   const instance = ref(null)
   const canvas = ref(null)
-  let angle = 0
-  const rotationSpeed = 0.009
-  let easyCam
-  let angleX = 0,
-    angleY = 0,
-    angleZ = 0 // Ângulos de rotação
-  let sliderX, sliderY, sliderZ // Controles deslizantes
 
-  const start = async (canvasContainer) => {
-    const easy = await import('p5.easycam/p5.easycam.js')
+  const rotationSpeed = 0.009
+  let angle = 0
+
+  let boxSize = 100
+  let targetSize = 100
+  let boxColor
+  let currentColor
+
+  const audioAnalyser = useAudioAnalyser()
+  const { averageVolume } = storeToRefs(audioAnalyser)
+
+  const start = async (canvasContainer, audioStream) => {
+    await import('p5.easycam/p5.easycam.js')
     container.value = canvasContainer
     instance.value = new p5(createSketch, container.value)
+
+    audioAnalyser.setupAudioAnalyser(audioStream)
+  }
+
+  const fitCanvas = () => {
+    const parentHeight = container.value.clientHeight
+    const parentWidth = container.value.clientWidth
+    instance.value.resizeCanvas(parentWidth, parentHeight)
   }
 
   const createSketch = (sketch) => {
     sketch.setup = () => setup(sketch)
     sketch.draw = () => draw(sketch)
+    sketch.windowResized = () => {
+      setTimeout(() => {
+        const parentHeight = container.value.clientHeight
+        const parentWidth = container.value.clientWidth
+
+        sketch.resizeCanvas(parentWidth, parentHeight)
+      })
+    }
   }
 
   const setup = (sketch) => {
@@ -29,34 +53,9 @@ const useCube = () => {
     const parentWidth = container.value.clientWidth
 
     canvas.value = sketch.createCanvas(parentWidth, parentHeight, sketch.WEBGL)
-    easyCam = sketch.createEasyCam()
-    // easyCam.removeMouseListeners()
-    // Cria os controles deslizantes
-    sliderX = sketch.createSlider(0, 360, 0) // Slider para o eixo X (0 a 360 graus)
-    sliderX.position(20, 20) // Posiciona o slider
-    sliderX.style('width', '150px') // Define a largura do slider
+    sketch.createEasyCam()
 
-    sliderY = sketch.createSlider(0, 360, 0) // Slider para o eixo Y (0 a 360 graus)
-    sliderY.position(20, 50) // Posiciona o slider
-    sliderY.style('width', '150px') // Define a largura do slider
-
-    sliderZ = sketch.createSlider(0, 360, 0) // Slider para o eixo Z (0 a 360 graus)
-    sliderZ.position(20, 80) // Posiciona o slider
-    sliderZ.style('width', '150px') // Define a largura do slider
-    // easyCam.setState(
-    //   {
-    //     distance: 300, // Distância da câmera
-    //     center: [0, 0, 0], // Centro da cena
-    //     rotation: [0, 0, 0, 1], // Rotação da câmera (quaternion)
-    //   },
-    //   0,
-    // ) // Duração da animação (0 para instantâneo)
-    //
-    // sketch.perspective(sketch.PI / 3, sketch.width / sketch.height, 0.1, 5000) // Ajusta a perspectiva
-
-    // sketch.background(25)
-    //
-    // easyCam.rotate(sketch.PI)
+    currentColor = sketch.color(255)
   }
 
   const draw = (sketch) => {
@@ -64,29 +63,34 @@ const useCube = () => {
 
     angle += rotationSpeed * (sketch.deltaTime / 16.67) // normaliza o FPS
     angle = angle % (2 * sketch.PI) // mantém o angulo entre 0 a 2 PI
-    angleX = sketch.radians(sliderX.value()) // Converte o valor do slider para radianos
-    angleY = sketch.radians(sliderY.value()) // Converte o valor do slider para radianos
-    angleZ = sketch.radians(sliderZ.value()) // Converte o valor do slider para radianos
 
     sketch.push()
-    // Aplica a rotação ao cubo
-    // sketch.rotateX(180)
-    // sketch.rotateX(10)
-    //
-    sketch.rotateX(angleX) // Rotação no eixo X
+
+    targetSize = sketch.map(averageVolume.value, 0, 100, 100, 200)
+
+    if (averageVolume.value > 50) {
+      boxColor = sketch.color(0, 255, 0)
+    } else {
+      boxColor = sketch.color(255)
+    }
+
+    boxSize = sketch.lerp(boxSize, targetSize, 0.1)
+
+    // Suaviza a transição da cor
+    let r = sketch.lerp(sketch.red(currentColor), sketch.red(boxColor), 0.1)
+    let g = sketch.lerp(sketch.green(currentColor), sketch.green(boxColor), 0.1)
+    let b = sketch.lerp(sketch.blue(currentColor), sketch.blue(boxColor), 0.1)
+    currentColor = sketch.color(r, g, b)
+
     sketch.rotateY(angle)
     sketch.rotateZ(sketch.PI / 4)
-    // sketch.rotateZ(sketch.PI / 4)
-    // sketch.rotateY(angle)
-    // easyCam.rotateY(45) // Rotação no eixo Y
-    // sketch.lights()
-    // sketch.noFill()
-    // sketch.stroke(255)
-    const box = sketch.box(100)
+    sketch.fill(currentColor)
+    sketch.box(boxSize)
+
     sketch.pop()
   }
 
-  return { start }
+  return { start, fitCanvas }
 }
 
 export { useCube }
