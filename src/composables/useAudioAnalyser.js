@@ -8,6 +8,7 @@ const useAudioAnalyser = () => {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)()
       const analyser = audioContext.createAnalyser()
       const microphone = audioContext.createMediaStreamSource(stream)
+
       microphone.connect(analyser)
       analyser.fftSize = 256
 

@@ -20,6 +20,7 @@ const usePeerConnection = () => {
     })
 
     await openConnectionAsync(peer)
+    // peer.on('connection', onConnectionHandler)
     peer.on('call', onCallHandler)
 
     return peer
@@ -33,6 +34,19 @@ const usePeerConnection = () => {
     myPeer.value.on('call', (call) => {
       call.answer(streamRef.value)
       call.on('stream', onStreamHandler)
+    })
+  }
+
+  const connect = (peer, peerId) => {
+    return new Promise((resolve) => {
+      const connection = peer.connect(peerId)
+      connection.on('open', () => {
+        resolve(connection)
+      })
+
+      connection.on('error', (err) => {
+        console.log(err, 'tive um erro aqui ')
+      })
     })
   }
 
@@ -52,6 +66,7 @@ const usePeerConnection = () => {
     answerCallsWith,
     startPeerConnection,
     setOnCallHandler,
+    connect,
   }
 }
 

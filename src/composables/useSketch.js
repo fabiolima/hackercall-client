@@ -1,16 +1,17 @@
 import p5 from 'p5'
 import { ref } from 'vue'
+import clm from 'clmtrackr'
+import { drawFace } from './drawFace'
+import { Observable } from 'rxjs'
 
 const useSketch = () => {
   const capture = ref(null)
   const capturing = ref(false)
-
+  const ctracker = ref(null)
   const instance = ref(null)
   const container = ref(null)
-
-  let lastWindowResize = 0
-  let currentTime = 0
-  const onResizeDebounce = 1000
+  const canvas = ref(null)
+  const canvasStream = ref(null)
 
   let params = {
     pixelSize: 11,
@@ -31,109 +32,63 @@ const useSketch = () => {
     instance.value = new p5(makeSketch, canvasContainerId)
   }
 
-  const fitVideoWidth = () => {
-    if (!capture.value) return Promise.resolve({ width: 0, height: 0 })
-    return new Promise((resolve) => {
-      capture.value.elt.style.width = '100%'
-      capture.value.elt.style.height = 'auto'
-
-      setTimeout(() => {
-        resolve(capture.value.size())
-      }, 0)
-    })
-  }
-
-  const fitVideoHeight = () => {
-    if (!capture.value) return Promise.resolve({ width: 0, height: 0 })
-    return new Promise((resolve) => {
-      capture.value.elt.style.width = 'auto'
-      capture.value.elt.style.height = '100%'
-
-      setTimeout(() => {
-        resolve(capture.value.size())
-      }, 0)
-    })
-  }
-
-  const onWindowResize = (sketch) => {
-    lastWindowResize = currentTime
-    capturing.value = false
-
-    const parentHeight = container.value.clientHeight
-
-    if (capture.value) {
-      capture.value.stop()
-      capture.value.elt.remove()
-    }
-
-    capture.value = sketch.createCapture(constraints, { flipped: true }, async () => {
-      capture.value.elt.style.position = 'absolute'
-      capture.value.elt.style.visibility = 'hidden'
-
-      let { width, height } = await fitVideoWidth()
-
-      if (height > parentHeight) {
-        ;({ width, height } = await fitVideoHeight())
+  const createFrameObservable = (canvas, fps) => {
+    return new Observable((subscriber) => {
+      function streamFacePositions() {
+        const pos = ctracker.value?.getCurrentPosition()
+        if (pos) subscriber.next(pos)
+        requestAnimationFrame(streamFacePositions)
       }
 
-      sketch.resizeCanvas(width, height)
+      streamFacePositions()
 
-      capture.value.size(width, height)
-      capture.value.hide()
+      // Função de limpeza (chamada quando o Observable é cancelado)
+      return () => {}
+    })
+  }
 
-      capturing.value = true
-      console.log(capture.value.elt.srcObject)
+  const createCamera = (sketch) => {
+    capturing.value = false
+    return new Promise((resolve) => {
+      const capture = sketch.createCapture(constraints, { flipped: true }, () => {
+        capture.elt.style.position = 'absolute'
+        capture.elt.style.top = 0
+        capture.elt.style.left = 0
+        capture.elt.style.zIndex = -10
+        capturing.value = true
+        capture.hide()
+        resolve(capture)
+      })
     })
   }
 
   const makeSketch = (sketch) => {
-    sketch.setup = () => {
+    sketch.setup = async () => {
       const parentHeight = container.value.clientHeight
       const parentWidth = container.value.clientWidth
 
-      sketch.createCanvas(parentWidth, parentHeight)
-      onWindowResize(sketch)
+      canvas.value = sketch.createCanvas(parentWidth, parentHeight)
+      capture.value = await createCamera(sketch)
+
+      ctracker.value = new clm.tracker()
+      ctracker.value.init()
+      ctracker.value.start(capture.value.elt)
+
+      canvasStream.value = createFrameObservable(canvas.value, 60)
     }
 
     sketch.windowResized = () => {
-      currentTime = sketch.millis()
+      const parentHeight = container.value.clientHeight
+      const parentWidth = container.value.clientWidth
 
-      if (currentTime - lastWindowResize < onResizeDebounce) return
-
-      onWindowResize(sketch)
+      sketch.resizeCanvas(parentWidth, parentHeight)
     }
 
     sketch.draw = () => {
       sketch.background(params.background)
-      sketch.textSize(params.textSize)
-      sketch.fill(params.colour)
 
-      const characters = params.characters.split('')
-
-      if (capturing.value) {
-        capture.value.loadPixels()
-
-        if (capture.value.pixels) {
-          for (let y = 0; y < capture.value.height; y += params.pixelSize) {
-            for (let x = 0; x < capture.value.width; x += params.pixelSize) {
-              // *4 is for each rgba value
-              const index = (x + y * capture.value.width) * 4
-
-              const r = capture.value.pixels[index]
-              const g = capture.value.pixels[index + 1]
-              const b = capture.value.pixels[index + 2]
-              // const a = capture.value.pixels[index + 3]
-
-              const bright = Math.round((r + g + b) / 3)
-
-              const letter =
-                characters[Math.round(sketch.map(bright, 0, 255, characters.length - 1, 0))]
-
-              sketch.text(letter, x, y)
-            }
-          }
-        }
-      }
+      const pos = ctracker.value?.getCurrentPosition()
+      drawFace(sketch, pos)
     }
   }
 
@@ -142,6 +97,7 @@ const useSketch = () => {
     capture,
     capturing,
     instance,
+    canvasStream,
   }
 }
 

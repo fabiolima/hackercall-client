@@ -1,34 +1,35 @@
 <template>
   <main class="bg-gray-900 h-full max-h-full w-full p-8 flex flex-col">
-    <div class="flex justify-between">
-      <h1 class="text-center mb-4 text-gray-100 text-3xl font-bold underline">Hackercall</h1>
-      <button class="text-white" v-if="myPeer" @click="copyJoinCallCommand">Call me</button>
-      <button class="text-white" v-if="myPeer" @click="copyMyPeerId">{{ myPeer.id }}</button>
+    <div class="flex">
+      <CallSettings class="grow" />
+      <div class="flex justify-end grow">
+        <button
+          @click="copyJoinCallCommand"
+          class="text-white text-2xl font-nothing tracking-[2px] cursor-pointer"
+        >
+          invite
+        </button>
+      </div>
     </div>
-
-    <div class="flex flex-col lg:flex-row h-full gap-4">
+    <div class="flex flex-col lg:flex-row h-full gap-4 mt-16 z-50 overflow-hidden">
       <MyStream></MyStream>
 
-      <div class="guests-container">
-        <PeerStream v-for="peer in peers" :call="peer" />
-      </div>
+      <PeerStream v-for="peer in peers" :call="peer" :key="peer.id" />
     </div>
   </main>
 </template>
 
 <script setup>
-import { onMounted, watchEffect } from 'vue'
 import MyStream from '@/components/MyStream.vue'
+import CallSettings from '@/components/CallSettings.vue'
+import PeerStream from '@/components/PeerStream.vue'
 import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
-import PeerStream from '@/components/PeerStream.vue'
 import { useRoute } from 'vue-router'
+import { onMounted } from 'vue'
 
 const peerStore = usePeerStore()
-
-const { callPeer } = peerStore
-const { peers, myPeer, myStream } = storeToRefs(peerStore)
-
+const { peers, myPeer } = storeToRefs(peerStore)
 const route = useRoute()
 
 const copyJoinCallCommand = () => {
@@ -38,21 +39,11 @@ const copyJoinCallCommand = () => {
 
   navigator.clipboard.writeText(baseUrl)
 }
-const copyMyPeerId = () => {
-  navigator.clipboard.writeText(myPeer.value.id)
-}
 
-onMounted(async () => {
-  // if (route.query.peerId) {
-  //   callPeer(route.query.peerId)
-  // }
-})
-
-watchEffect(() => {
-  console.log(myPeer.value, myStream.value, route.query.peerId)
-  if (myPeer.value && myStream.value && route.query.peerId) {
-    console.log('vou chamar')
-    callPeer(route.query.peerId)
+onMounted(() => {
+  if (route.query.peerId) {
+    console.log('achei um peerId', route.query.peerId)
+    peerStore.callPeer(route.query.peerId)
   }
 })
 </script>

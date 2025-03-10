@@ -1,21 +1,33 @@
 <template>
-  <h1 class="text-white">aloo</h1>
-  <video ref="video" autoplay playsinline=""></video>
+  <div ref="canvasContainer" id="peer-canvas-container" class="h-full w-full overflow-hidden"></div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { useMediaStore } from '@/stores/media'
+import { storeToRefs } from 'pinia'
+import { useCube } from '@/composables/useCube'
+
+const { start: startMyCube } = useCube()
+
+const canvasContainer = ref(null)
 
 const props = defineProps(['call'])
-const stream = ref(null)
-console.log(props)
-const video = ref(null)
-onMounted(() => {
-  console.log(props.call)
 
-  props.call.on('stream', (peerStream) => {
-    stream.value = peerStream
-    video.value.srcObject = peerStream
+const { stream } = storeToRefs(useMediaStore())
+
+onMounted(() => {
+  props.call.answer(stream.value)
+  props.call.on('stream', (incomingStream) => {
+    const aCtx = new AudioContext()
+    const microphone = aCtx.createMediaStreamSource(incomingStream)
+    const destination = aCtx.destination
+    microphone.connect(destination)
+    startMyCube(canvasContainer.value, stream.value)
   })
+})
+
+onUnmounted(() => {
+  // subscription.unsubscribe()
 })
 </script>

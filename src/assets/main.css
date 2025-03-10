@@ -1,4 +1,15 @@
+@font-face {
+  font-family: 'Nothing';
+  font-style: normal;
+  font-weight: normal;
+  src: url('@/assets/fonts/NOTHING.otf.ttf') format('truetype');
+}
+
 @import 'tailwindcss';
+
+@theme {
+  --font-nothing: 'Nothing', sans-serif;
+}
 
 .sonar {
   content: '';
