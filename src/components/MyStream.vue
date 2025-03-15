@@ -12,7 +12,9 @@ import { useCube } from '@/composables/useCube'
 import { usePeerStore } from '@/stores/peer'
 import { useMediaStore } from '@/stores/media'
 import { storeToRefs } from 'pinia'
+import { useCallSettingsStore } from '@/stores/settings'
 
+const { settings } = storeToRefs(useCallSettingsStore())
 const { stream } = storeToRefs(useMediaStore())
 const { start: startMyCube, fitCanvas } = useCube()
 const { peers } = storeToRefs(usePeerStore())
@@ -21,7 +23,7 @@ const canvasContainer = ref(null)
 
 onMounted(async () => {
   setTimeout(() => {
-    startMyCube(canvasContainer.value, stream.value)
+    startMyCube({ container: canvasContainer.value, stream: stream.value, settings: settings })
     canvasContainer.value.focus()
   }, 1000 * 2)
 })

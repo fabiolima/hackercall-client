@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center justify-center">
     <div class="box mb-4"></div>
-    <h1 class="text-2xl text-white font-nothing tracking-[2px]">Loading...</h1>
+    <h1 class="text-2xl text-white font-iceland">Loading...</h1>
   </div>
 </template>
 

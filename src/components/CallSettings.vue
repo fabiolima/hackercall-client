@@ -3,7 +3,7 @@
     <button
       @click="closeSettingsWindow"
       ref="closeBtn"
-      class="font-iceland absolute top-0 right-0 mt-12 mr-12 text-white text-2xl cursor-pointer"
+      class="font-iceland absolute top-0 left-0 m-2 text-white text-2xl cursor-pointer"
     >
       [esc] close
     </button>
@@ -49,14 +49,15 @@ import { useCallSettingsStore } from '@/stores/settings'
 import { storeToRefs } from 'pinia'
 import { useMediaDevices } from '@/composables/useMediaDevices'
 import { useSettingsWindowAnimation } from '@/composables/useSettingsWindowAnimation'
+
 const callSettingsStore = useCallSettingsStore()
-const { getAudioInputDevices, getUserMedia } = useMediaDevices()
-const { showSettingsWindow, closeSettingsWindow } = callSettingsStore
+const { closeSettingsWindow } = callSettingsStore
 const { visible, settings } = storeToRefs(callSettingsStore)
+
+const { getAudioInputDevices } = useMediaDevices()
 
 const settingsWindow = ref(null)
 const closeBtn = ref(null)
-
 const devices = ref(null)
 
 const { show, close } = useSettingsWindowAnimation({
