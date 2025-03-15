@@ -5,10 +5,18 @@
   src: url('@/assets/fonts/NOTHING.otf.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Iceland';
+  font-style: normal;
+  font-weight: normal;
+  src: url('@/assets/fonts/Iceland-Regular.ttf') format('truetype');
+}
+
 @import 'tailwindcss';
 
 @theme {
   --font-nothing: 'Nothing', sans-serif;
+  --font-iceland: 'Iceland', sans-serif;
 }
 
 .sonar {
