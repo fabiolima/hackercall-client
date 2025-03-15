@@ -1,15 +1,20 @@
 <template>
   <main class="bg-[#0a0a0a] h-full max-h-full w-full p-8 flex flex-col">
-    <div class="flex">
-      <CallSettings class="grow" />
-      <div class="flex justify-end grow">
-        <button
-          @click="copyJoinCallCommand"
-          class="text-white text-2xl font-nothing tracking-[2px] cursor-pointer"
-        >
-          invite
-        </button>
-      </div>
+    <div class="flex gap-4 justify-center">
+      <button
+        ref="settingsBtn"
+        class="text-2xl text-white hover:text-green-500 cursor-pointer font-iceland"
+        @click="showSettingsWindow"
+      >
+        [s] settings
+      </button>
+
+      <button
+        @click="copyJoinCallCommand"
+        class="text-white text-2xl font-iceland tracking-[2px] cursor-pointer"
+      >
+        [i] invite
+      </button>
     </div>
     <div class="flex flex-col lg:flex-row h-full gap-4 mt-16 z-50 overflow-hidden">
       <MyStream></MyStream>
@@ -21,12 +26,15 @@
 
 <script setup>
 import MyStream from '@/components/MyStream.vue'
-import CallSettings from '@/components/CallSettings.vue'
 import PeerStream from '@/components/PeerStream.vue'
 import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { onMounted } from 'vue'
+import { useCallSettingsStore } from '@/stores/settings'
+
+const callSettingsStore = useCallSettingsStore()
+const { showSettingsWindow } = callSettingsStore
 
 const peerStore = usePeerStore()
 const { peers, myPeer } = storeToRefs(peerStore)

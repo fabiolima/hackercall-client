@@ -1,12 +1,5 @@
 <template>
-  <section @keydown.esc="closeSettingsWindow" ref="wrapper" class="call-settings-window-wrapper">
-    <button
-      ref="settingsBtn"
-      class="text-4xl rounded-full text-white font-iceland"
-      @click="showSettingsWindow"
-    >
-      Settings
-    </button>
+  <section ref="wrapper" class="call-settings-window-wrapper">
     <section ref="settingsWindow" class="call-settings-window hidden bg-blue-700">
       <button
         @click="closeSettingsWindow"
@@ -81,6 +74,15 @@ const { show, close } = useSettingsWindowAnimation({
   settingsBtn,
   closeBtn,
 })
+
+onKeyStroke(
+  's',
+  (e) => {
+    e.preventDefault()
+    showSettingsWindow()
+  },
+  { dedupe: true },
+)
 
 onKeyStroke(
   'Escape',

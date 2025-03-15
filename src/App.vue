@@ -7,6 +7,7 @@
   </div>
 
   <div ref="appWindow" class="-translate-y-full h-full w-full">
+    <CallSettings />
     <CallView v-if="!isLoading" />
   </div>
 </template>
@@ -16,9 +17,11 @@ import { ref, onMounted, computed } from 'vue'
 import { useMediaStore } from '@/stores/media'
 import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
+import { useStartupAnimation } from './composables/useStartupAnimation'
+
 import CallView from './views/CallView.vue'
 import LoadingWindow from './components/LoadingWindow.vue'
-import { useStartupAnimation } from './composables/useStartupAnimation'
+import CallSettings from './components/CallSettings.vue'
 
 const mediaStore = useMediaStore()
 const peerStore = usePeerStore()
