@@ -27,8 +27,9 @@ import PeerStream from '@/components/PeerStream.vue'
 import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useCallSettingsStore } from '@/stores/settings'
+import { onKeyStroke } from '@vueuse/core'
 
 const callSettingsStore = useCallSettingsStore()
 const { showSettingsWindow } = callSettingsStore
@@ -37,6 +38,8 @@ const peerStore = usePeerStore()
 const { peers, myPeer } = storeToRefs(peerStore)
 const route = useRoute()
 
+const settingsBtn = ref(null)
+
 const copyJoinCallCommand = () => {
   const baseUrl = import.meta.env.DEV
     ? `http://localhost:3339/?peerId=${myPeer.value.id}`
@@ -44,6 +47,16 @@ const copyJoinCallCommand = () => {
 
   navigator.clipboard.writeText(baseUrl)
 }
+
+onKeyStroke('s', () => {
+  settingsBtn.value.classList.remove('text-white')
+  settingsBtn.value.classList.add('text-green-500')
+
+  setTimeout(() => {
+    settingsBtn.value.classList.remove('text-green-500')
+    settingsBtn.value.classList.add('text-white')
+  }, 120)
+})
 
 onMounted(() => {
   if (route.query.peerId) {

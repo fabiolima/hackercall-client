@@ -49,8 +49,7 @@ onMounted(async () => {
 
 onKeyStroke(
   's',
-  (e) => {
-    e.preventDefault()
+  () => {
     showSettingsWindow()
   },
   { dedupe: true },

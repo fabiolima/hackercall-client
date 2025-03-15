@@ -23,6 +23,7 @@ const useSettingsWindowAnimation = ({ settingsWindow, closeBtn }) => {
     })
 
     tl.to(settingsWindow.value, {
+      duration: 0.5,
       scale: 1,
     })
 
@@ -41,7 +42,7 @@ const useSettingsWindowAnimation = ({ settingsWindow, closeBtn }) => {
         y: 100,
         stagger: 0.2,
       },
-      { opacity: 1, y: 0, stagger: 0.2 },
+      { opacity: 1, y: 0, stagger: 0.2, duration: 0.2 },
       '<',
     )
     animation.value = tl
