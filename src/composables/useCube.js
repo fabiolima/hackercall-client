@@ -59,7 +59,7 @@ const useCube = () => {
   }
 
   const draw = (sketch) => {
-    sketch.background(0)
+    sketch.background('#0a0a0a')
 
     angle += rotationSpeed * (sketch.deltaTime / 16.67) // normaliza o FPS
     angle = angle % (2 * sketch.PI) // mantém o angulo entre 0 a 2 PI

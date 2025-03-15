@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-gray-900 h-full max-h-full w-full p-8 flex flex-col">
+  <main class="bg-[#0a0a0a] h-full max-h-full w-full p-8 flex flex-col">
     <div class="flex">
       <CallSettings class="grow" />
       <div class="flex justify-end grow">

@@ -2,7 +2,7 @@
   <section @keydown.esc="closeSettingsWindow" ref="wrapper" class="call-settings-window-wrapper">
     <button
       ref="settingsBtn"
-      class="text-4xl rounded-full text-white font-nothing"
+      class="text-4xl rounded-full text-white font-iceland"
       @click="showSettingsWindow"
     >
       Settings
@@ -11,14 +11,14 @@
       <button
         @click="closeSettingsWindow"
         ref="closeBtn"
-        class="font-nothing absolute p-6 right-0 top-0 text-white text-lg cursor-pointer tracking-[2px]"
+        class="font-iceland absolute p-6 right-0 top-0 text-white text-lg cursor-pointer tracking-[2px]"
       >
         Close [esc]
       </button>
       <div class="settings-item mx-auto max-w-sm mb-8">
         <div class="relative form-control text-white border-2 border-white">
           <label
-            class="absolute text-xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-nothing tracking-[2px]"
+            class="absolute text-xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-iceland tracking-[2px]"
             for="username"
             >username</label
           >
@@ -29,14 +29,14 @@
             autocomplete="off"
             name="username"
             type="text"
-            class="p-4 text-2xl text-white font-nothing w-full tracking-[2px] focus:ring-0 focus:outline-0"
+            class="p-4 text-2xl text-white font-iceland w-full tracking-[2px] focus:ring-0 focus:outline-0"
           />
         </div>
       </div>
       <div class="settings-item mx-auto max-w-sm">
         <div class="relative form-control text-white border-2 border-white">
           <label
-            class="absolute text-xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-nothing tracking-[2px]"
+            class="absolute text-xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-iceland tracking-[2px]"
             for="username"
             >username</label
           >
@@ -46,7 +46,7 @@
             autocomplete="off"
             name="username"
             type="text"
-            class="p-4 text-2xl text-white font-nothing w-full tracking-[2px] focus:ring-0 focus:outline-0"
+            class="p-4 text-2xl text-white font-iceland w-full tracking-[2px] focus:ring-0 focus:outline-0"
           />
         </div>
       </div>
