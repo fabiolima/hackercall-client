@@ -1,51 +1,44 @@
 <template>
-  <section ref="wrapper" class="call-settings-window-wrapper">
-    <section ref="settingsWindow" class="call-settings-window hidden bg-blue-700">
-      <button
-        @click="closeSettingsWindow"
-        ref="closeBtn"
-        class="font-iceland absolute p-6 right-0 top-0 text-white text-lg cursor-pointer tracking-[2px]"
-      >
-        Close [esc]
-      </button>
-      <div class="settings-item mx-auto max-w-sm mb-8">
-        <div class="relative form-control text-white border-2 border-white">
-          <label
-            class="absolute text-xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-iceland tracking-[2px]"
-            for="username"
-            >username</label
-          >
+  <section ref="settingsWindow" class="call-settings-window hidden bg-blue-700 p-12">
+    <button
+      @click="closeSettingsWindow"
+      ref="closeBtn"
+      class="font-iceland absolute top-0 right-0 mt-12 mr-12 text-white text-2xl cursor-pointer"
+    >
+      [esc] close
+    </button>
 
-          <input
-            placeholder="$ -> "
-            id="username"
-            autocomplete="off"
-            name="username"
-            type="text"
-            class="p-4 text-2xl text-white font-iceland w-full tracking-[2px] focus:ring-0 focus:outline-0"
-          />
-        </div>
+    <h3 class="text-4xl font-iceland underline mb-8 text-center text-white">settings</h3>
+
+    <div class="settings-item mx-auto max-w-sm mb-8">
+      <div class="relative form-control text-white border-2 border-white">
+        <label
+          class="absolute text-2xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-iceland"
+          for="username"
+          >username</label
+        >
+
+        <input
+          v-model="settings.username"
+          placeholder="$ -> "
+          id="username"
+          autocomplete="off"
+          name="username"
+          type="text"
+          class="p-4 text-2xl text-green-500 font-iceland w-full focus:ring-0 focus:outline-0"
+        />
       </div>
-      <div class="settings-item mx-auto max-w-sm">
-        <div class="relative form-control text-white border-2 border-white">
-          <label
-            class="absolute text-xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-iceland tracking-[2px]"
-            for="username"
-            >username</label
-          >
+    </div>
 
-          <input
-            id="username"
-            autocomplete="off"
-            name="username"
-            type="text"
-            class="p-4 text-2xl text-white font-iceland w-full tracking-[2px] focus:ring-0 focus:outline-0"
-          />
-        </div>
+    <div class="settings-item mx-auto max-w-sm mb-8">
+      <div class="flex items-center">
+        <input v-model="settings.rememberMe" type="checkbox" class="" id="save" />
+
+        <label for="save" class="ml-4 text-white text-2xl font-iceland">
+          remember my settings
+        </label>
       </div>
-
-      <!-- <h3 class="text-white text-4xl">Settings</h3> -->
-    </section>
+    </div>
   </section>
 </template>
 
@@ -59,30 +52,17 @@ import { useSettingsWindowAnimation } from '@/composables/useSettingsWindowAnima
 const callSettingsStore = useCallSettingsStore()
 const { getAudioInputDevices, getUserMedia } = useMediaDevices()
 const { showSettingsWindow, closeSettingsWindow } = callSettingsStore
-const { visible } = storeToRefs(callSettingsStore)
+const { visible, settings } = storeToRefs(callSettingsStore)
 
 const settingsWindow = ref(null)
-const wrapper = ref(null)
-const settingsBtn = ref(null)
 const closeBtn = ref(null)
 
 const devices = ref(null)
 
 const { show, close } = useSettingsWindowAnimation({
-  wrapper,
   settingsWindow,
-  settingsBtn,
   closeBtn,
 })
-
-onKeyStroke(
-  's',
-  (e) => {
-    e.preventDefault()
-    showSettingsWindow()
-  },
-  { dedupe: true },
-)
 
 onKeyStroke(
   'Escape',

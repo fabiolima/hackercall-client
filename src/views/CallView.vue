@@ -9,10 +9,7 @@
         [s] settings
       </button>
 
-      <button
-        @click="copyJoinCallCommand"
-        class="text-white text-2xl font-iceland tracking-[2px] cursor-pointer"
-      >
+      <button @click="copyJoinCallCommand" class="text-white text-2xl font-iceland cursor-pointer">
         [i] invite
       </button>
     </div>

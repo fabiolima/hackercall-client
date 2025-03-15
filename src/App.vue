@@ -7,9 +7,10 @@
   </div>
 
   <div ref="appWindow" class="-translate-y-full h-full w-full">
-    <CallSettings />
     <CallView v-if="!isLoading" />
   </div>
+
+  <CallSettings />
 </template>
 
 <script setup>
@@ -18,10 +19,15 @@ import { useMediaStore } from '@/stores/media'
 import { usePeerStore } from '@/stores/peer'
 import { storeToRefs } from 'pinia'
 import { useStartupAnimation } from './composables/useStartupAnimation'
-
+import { onKeyStroke } from '@vueuse/core'
 import CallView from './views/CallView.vue'
 import LoadingWindow from './components/LoadingWindow.vue'
 import CallSettings from './components/CallSettings.vue'
+import { useCallSettingsStore } from './stores/settings'
+
+const settingsStore = useCallSettingsStore()
+
+const { showSettingsWindow } = settingsStore
 
 const mediaStore = useMediaStore()
 const peerStore = usePeerStore()
@@ -41,6 +47,15 @@ onMounted(async () => {
   await startMyPeer()
 })
 
+onKeyStroke(
+  's',
+  (e) => {
+    e.preventDefault()
+    showSettingsWindow()
+  },
+  { dedupe: true },
+)
+
 const isLoading = computed(() => {
   return (
     !mediaState.value.completed ||
@@ -48,5 +63,13 @@ const isLoading = computed(() => {
     !peerState.value.completed ||
     peerState.value.loading
   )
+})
+
+settingsStore.$subscribe((mutation, state) => {
+  if (state.settings.rememberMe) {
+    localStorage.setItem('hackercall::settings', JSON.stringify(state.settings))
+  } else {
+    localStorage.removeItem('hackercall::settings')
+  }
 })
 </script>
