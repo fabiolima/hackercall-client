@@ -35,6 +35,34 @@
       </div>
     </div>
 
+    <div
+      class="settings-item mx-auto max-w-sm mb-8 border-2 border-white relative pt-5 pb-4 px-4 flex flex-wrap gap-2"
+    >
+      <label
+        class="absolute top-0 left-0 text-white text-2xl translate-x-4 -translate-y-4 bg-blue-700 px-4 font-iceland"
+      >
+        cube color
+      </label>
+
+      <label
+        v-for="color in colorOptions"
+        :key="color"
+        :for="`color-${color}`"
+        class="h-12 w-12 inline-block cursor-pointer"
+        :class="settings.color == color && 'border-2 border-white '"
+        :style="{ backgroundColor: color, content: '' }"
+      >
+        <input
+          v-model="settings.color"
+          type="radio"
+          name="color"
+          class="invisible w-0 h-0"
+          :value="color"
+          :id="`color-${color}`"
+        />
+      </label>
+    </div>
+
     <div class="settings-item mx-auto max-w-sm mb-8">
       <div class="flex items-center">
         <input v-model="settings.rememberMe" type="checkbox" class="" id="save" />
@@ -70,6 +98,21 @@ const { show, close } = useSettingsWindowAnimation({
   settingsWindow,
   closeBtn,
 })
+
+const colorOptions = [
+  '#ffffff',
+  '#ef4444', // red
+  '#f97316', // orange
+  '#eab308', // yellow
+  '#10b981', // emerald
+  '#0ea5e9', // sky
+  '#3b82f6', // blue
+  '#8b5cf6', // violet
+  '#ec4899', // pink
+  '#e11d48', // rose
+  '#6b7280', // gray
+  '#78716c', // stone
+]
 
 onKeyStroke(
   'Escape',

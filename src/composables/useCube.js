@@ -98,7 +98,7 @@ const useCube = () => {
     if (averageVolume.value > 10) {
       boxColor = sketch.color(0, 255, 0)
     } else {
-      boxColor = sketch.color(255)
+      boxColor = sketch.color(userSettings.value.color)
     }
 
     const { initial, target } = getBoxSize(sketch)

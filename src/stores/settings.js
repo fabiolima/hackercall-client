@@ -14,6 +14,7 @@ const getInitialState = () => {
     return {
       username: generateUsername(),
       rememberMe: true,
+      color: '#ffffff',
     }
   }
 }
