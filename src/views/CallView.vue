@@ -9,7 +9,10 @@
         [s] settings
       </button>
 
-      <button @click="copyJoinCallCommand" class="text-white text-2xl font-iceland cursor-pointer">
+      <button
+        @click="copyJoinCallCommand"
+        class="text-white hover:text-green-500 text-2xl font-iceland cursor-pointer"
+      >
         [i] invite
       </button>
     </div>
@@ -25,6 +28,7 @@
 import MyStream from '@/components/MyStream.vue'
 import PeerStream from '@/components/PeerStream.vue'
 import { usePeerStore } from '@/stores/peer'
+import { useRoomStore } from '@/stores/room'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
@@ -35,14 +39,18 @@ const callSettingsStore = useCallSettingsStore()
 const { showSettingsWindow } = callSettingsStore
 
 const peerStore = usePeerStore()
+const roomStore = useRoomStore()
+
 const { peers, myPeer } = storeToRefs(peerStore)
+const { room } = storeToRefs(roomStore)
+
 const route = useRoute()
 
 const settingsBtn = ref(null)
 
 const copyJoinCallCommand = () => {
   const baseUrl = import.meta.env.DEV
-    ? `http://localhost:3339/?peerId=${myPeer.value.id}`
+    ? `http://localhost:3339/?joinRoom=${room.value}`
     : `https://hackercall-client.onrender.com/?peerId=${myPeer.value.id}`
 
   navigator.clipboard.writeText(baseUrl)

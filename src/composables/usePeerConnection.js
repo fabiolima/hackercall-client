@@ -13,10 +13,17 @@ const usePeerConnection = () => {
   }
 
   const startPeerConnection = async (onCallHandler) => {
+    const url = new URL(import.meta.env.VITE_SERVER_URL)
+
     const peer = new Peer({
-      host: 'hackercall-peerjs-server.onrender.com',
-      secure: true,
-      path: '/',
+      // host: 'hackercall-peerjs-server.onrender.com',
+      // secure: true,
+      // path: '/',
+      //
+      host: url.hostname,
+      port: url.port,
+      secure: import.meta.env.PROD,
+      path: import.meta.env.VITE_PEER_PATH,
     })
 
     await openConnectionAsync(peer)

@@ -5,6 +5,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useMediaStore } from '@/stores/media'
+import { useCallSettingsStore } from '@/stores/settings'
 import { storeToRefs } from 'pinia'
 import { useCube } from '@/composables/useCube'
 
@@ -14,6 +15,7 @@ const canvasContainer = ref(null)
 
 const props = defineProps(['call'])
 
+const { settings } = storeToRefs(useCallSettingsStore())
 const { stream } = storeToRefs(useMediaStore())
 
 onMounted(() => {
@@ -22,8 +24,10 @@ onMounted(() => {
     const aCtx = new AudioContext()
     const microphone = aCtx.createMediaStreamSource(incomingStream)
     const destination = aCtx.destination
+
     microphone.connect(destination)
-    startMyCube(canvasContainer.value, stream.value)
+
+    startMyCube({ container: canvasContainer.value, stream: incomingStream, settings: settings })
   })
 })
 
